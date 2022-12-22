@@ -2,24 +2,25 @@ import argparse
 import logging
 import os
 import random
+import sys
 import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
-# from networks.segformer import MySegFormer as ViT_seg
-# from networks.EfficientMISSFormer import EffMISSFormer
-# from networks.MSTransception import MSTransception
-# from networks.MSTransceptionPlayCat import MSTransception
-from networks.MSTr import MSTransception
+import torch.nn as nn
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+from datasets.dataset_synapse import Synapse_dataset
+from utils import test_single_volume
+from networks.MSTr  import MSTransception
 from trainer import trainer_synapse
-# from trainer_accu import trainer_synapse
-import warnings
-warnings.filterwarnings('ignore')
+
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--root_path', type=str,
                     default='/images/PublicDataset/Transunet_synaps/project_TransUNet/data/Synapse/train_npz', help='root dir for data')
-parser.add_argument('--test_path', type=str,
-                    default='/images/PublicDataset/Transunet_synaps/project_TransUNet/data/Synapse/test_vol_h5', help='root dir for data')
+parser.add_argument('--volume_path', type=str,
+                    default='/images/PublicDataset/Transunet_synaps/project_TransUNet/data/Synapse', help='root dir for data')
 parser.add_argument('--dataset', type=str,
                     default='Synapse', help='experiment_name')
 parser.add_argument('--list_dir', type=str,
@@ -27,7 +28,7 @@ parser.add_argument('--list_dir', type=str,
 parser.add_argument('--num_classes', type=int,
                     default=9, help='output channel of network')
 parser.add_argument('--output_dir', type=str, 
-                    default='./output',help='output dir')                   
+                    default='./output_v5',help='output dir')                   
 parser.add_argument('--max_iterations', type=int,
                     default=90000, help='maximum epoch number to train')
 parser.add_argument('--max_epochs', type=int,
@@ -39,7 +40,7 @@ parser.add_argument('--num_workers', type=int,
 parser.add_argument('--eval_interval', type=int,
                     default=20, help='eval_interval')
 parser.add_argument('--model_name', type=str,
-                    default='Transception', help='model_name')
+                    default='transfilm', help='model_name')
 parser.add_argument('--n_gpu', type=int, default=1, help='total gpu')
 parser.add_argument('--deterministic', type=int,  default=1,
                     help='whether use deterministic training')
@@ -51,6 +52,7 @@ parser.add_argument('--z_spacing', type=int,
                     default=1, help='z_spacing')
 parser.add_argument('--seed', type=int,
                     default=1234, help='random seed')
+parser.add_argument('--is_savenii', type=bool, default=True, help="True, then the prediction can be saved")
 # parser.add_argument('--cfg', type=str, required=True, metavar="FILE", help='path to config file', )
 parser.add_argument(
         "--opts",
@@ -79,69 +81,82 @@ parser.add_argument('--inception_comb', type=str,  default="135", help='Set the 
 
 parser.add_argument('--head_count', type=int,  default=8, help='number of head in attention module')
 parser.add_argument('--MSViT_config', type=int,  default=2, help='Set which config to use')
-parser.add_argument('--concat', type=str,  default="coord", help='normal--2d concat; 3d--3d concat; coord--coord attention i.e. iff')
+parser.add_argument('--concat', type=str,  default="coord", help='normal--2d concat; 3d--3d concat')
 parser.add_argument('--have_bridge', type=str,
-                    default='original', help='None: no bridge; new:new bridge; original: original bridge para:para bridge')
+                    default='original', help='None: no bridge; new:new bridge; original: original bridge')
 
-parser.add_argument('--use_sa_config',type=int,  default=1, help='use_sa_config in cbam')
+parser.add_argument('--use_sa_config',type=int,  default=1, help='use_sa_config')
 parser.add_argument('--sa_ker',type=int,  default=7, help='set kernel size for cbam')
-
 parser.add_argument('--grad_clipping', type=bool, default=False, help='use grad clipping or not')
 parser.add_argument('--use_scheduler', type=bool, default=True, help='True cos scheduler is used.')
 parser.add_argument('--Stage_3or4',type=int,  default=3, help='setting the number of MS stages.')
 parser.add_argument('--inter', type=str,  default="res", help='decide the interface in the msca-stage in MSViT_casa')
-parser.add_argument('--num_sp',type=int,  default=0, help='setting the number of spatial aware attention in the bridge.')
 parser.add_argument('--br_config', type=int, default=2, help='choose the config for bridge attention for sequence.')
+parser.add_argument('--weight_pth', type=str, default="./output/best_val.pth", help="set the path to the trained weight")
 args = parser.parse_args()
 
+
+if args.dataset == "Synapse":
+    args.volume_path = os.path.join(args.volume_path, "test_vol_h5")
 # config = get_config(args)
 
 
-if __name__ == "__main__":  
-    # os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+def inference(args, model, test_save_path=None):
+    db_test = args.Dataset(base_dir=args.volume_path, split="test_vol",img_size=args.img_size, list_dir=args.list_dir)
+    testloader = DataLoader(db_test, batch_size=1, shuffle=False, num_workers=1)
+    logging.info("{} test iterations per epoch".format(len(testloader)))
+    model.eval()
+    metric_list = 0.0
+    for i_batch, sampled_batch in tqdm(enumerate(testloader)):
+        h, w = sampled_batch["image"].size()[2:]
+        image, label, case_name = sampled_batch["image"], sampled_batch["label"], sampled_batch['case_name'][0]
+        metric_i = test_single_volume(image, label, model, classes=args.num_classes, patch_size=[args.img_size, args.img_size],
+                                      test_save_path=test_save_path, case=case_name, z_spacing=args.z_spacing)
+        metric_list += np.array(metric_i)
+        logging.info('idx %d case %s mean_dice %f mean_hd95 %f' % (i_batch, case_name, np.mean(metric_i, axis=0)[0], np.mean(metric_i, axis=0)[1]))
+    metric_list = metric_list / len(db_test)
+    for i in range(1, args.num_classes):
+        logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list[i-1][0], metric_list[i-1][1]))
+    performance = np.mean(metric_list, axis=0)[0]
+    mean_hd95 = np.mean(metric_list, axis=0)[1]
+    logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))
+    return "Testing Finished!"
+
+
+if __name__ == "__main__":
+    os.environ["CUDA_VISIBLE_DEVICES"] = '0'
     if not args.deterministic:
         cudnn.benchmark = True
         cudnn.deterministic = False
     else:
         cudnn.benchmark = False
         cudnn.deterministic = True
-    torch.cuda.empty_cache()
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed(args.seed)
 
-    dataset_name = args.dataset
     dataset_config = {
         'Synapse': {
-            'root_path': args.root_path,
-            'list_dir': args.list_dir,
+            'Dataset': Synapse_dataset,
+            'volume_path': args.volume_path,
+            'list_dir': '/home/students/yiwei/yiwei_gitlab/MISSFormer-bridge/MISSFormer/lists/lists_Synapse',
             'num_classes': 9,
+            'z_spacing': 1,
         },
     }
-
-    if args.batch_size != 24 and args.batch_size % 5 == 0:
-        args.base_lr *= args.batch_size / 24
+    dataset_name = args.dataset
     args.num_classes = dataset_config[dataset_name]['num_classes']
-    args.root_path = dataset_config[dataset_name]['root_path']
+    args.volume_path = dataset_config[dataset_name]['volume_path']
+    args.Dataset = dataset_config[dataset_name]['Dataset']
     args.list_dir = dataset_config[dataset_name]['list_dir']
-
-    if not os.path.exists(args.output_dir):
-        os.makedirs(args.output_dir)
-    
+    args.z_spacing = dataset_config[dataset_name]['z_spacing']
+    args.is_pretrain = True
     if args.dil_conv:
         print('----------using dil conv: dil = 2--------')
     else:
         print('----------not using dil conv-------------')
 
-    # print('\n inception combination' + args.inception_comb)
-    # args.use_scheduler = False
-   
-    print(f'using bridge: {args.have_bridge}')
-
-    print(f'use_scheduler:{args.use_scheduler}')
-    print(f"use concat module {args.concat}")
-  
     if args.br_config == 0:
         print('In bridge, 4 spatial attention')
         br_ch_att_list = [False, False, False, False]
@@ -158,13 +173,32 @@ if __name__ == "__main__":
         print('In bridge, c s c s')
         br_ch_att_list = [True, False, True, False]
 
-    # net = Transception(num_classes=args.num_classes, head_count=1, dil_conv = args.dil_conv, token_mlp_mode="mix_skip", inception=args.inception_comb).cuda(0)
-    # MSTransception.py
-#    net = MSTransception(num_classes=args.num_classes, head_count=args.head_count, dil_conv = args.dil_conv, token_mlp_mode="mix_skip", MSViT_config=args.MSViT_config, concat=args.concat, have_bridge=args.have_bridge).cuda()
-    # MSTransception_playCat.py
- 
+    # net = Transception(num_classes=args.num_classes, head_count=1, dil_conv = args.dil_conv, token_mlp_mode="mix_skip").cuda(0)
+    # net = MSTransception(num_classes=args.num_classes, head_count=args.head_count, dil_conv = args.dil_conv, token_mlp_mode="mix_skip", MSViT_config=args.MSViT_config, concat=args.concat, have_bridge=args.have_bridge, use_sa_config=args.use_sa_config,sa_ker=args.sa_ker,Stage_3or4=args.Stage_3or4, inter = args.inter).cuda()
     net = MSTransception(num_classes=args.num_classes, head_count=args.head_count, token_mlp_mode="mix_skip", MSViT_config=args.MSViT_config, concat=args.concat, have_bridge=args.have_bridge, Stage_3or4=args.Stage_3or4, br_ch_att_list=br_ch_att_list).cuda()
 
+    snapshot = args.weight_pth
+    if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model', 'epoch_'+str(args.max_epochs-1)+"_wo_bridge")
+    msg = net.load_state_dict(torch.load(snapshot))
+    print(f"test model name: {args.model_name}")
+    print(f"save prediction?: {args.is_savenii}")
+    snapshot_name = snapshot.split('/')[-1]
 
-    trainer = {'Synapse': trainer_synapse,}
-    trainer[dataset_name](args, net, args.output_dir)
+    # log_folder = './test_log/test_log_'
+    log_folder = os.path.join(args.output_dir, 'test_log') 
+    os.makedirs(log_folder, exist_ok=True)
+    logging.basicConfig(filename=log_folder + '/'+snapshot_name+".txt", level=logging.INFO, format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+    logging.info(str(args))
+    logging.info(snapshot_name)
+
+    if args.is_savenii:
+        args.test_save_dir = os.path.join(args.output_dir, "predictions")
+        test_save_path = args.test_save_dir 
+        os.makedirs(test_save_path, exist_ok=True)
+    else:
+        test_save_path = None
+
+
+    inference(args, net, test_save_path)
+
