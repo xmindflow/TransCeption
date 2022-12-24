@@ -1,9 +1,5 @@
 # TransCeption: Hierarchical and Inception-like Transformer Design for Medical Image Segmentation
 
-(NOT FINISHED)
-
-
-
 TransCeption is a U-shaped hierarchical architecture which aggregates the inception-like structure in the encoder based on the pure transformer network.
 
  In this approach,  
@@ -12,13 +8,9 @@ TransCeption is a U-shaped hierarchical architecture which aggregates the incept
 
 - Intra-stage Feature Fusion Module (IFF) is introduced to emphasize the interactions across the channel dimension of concatenated feature maps with the crucial positional information properly retained.
 
-- We redesign Dual Transformer Bridge based on the Enhanced Transformer Context Bridge \cite{huang2021missformer} to further model inter-stage correlations of hierarchical multi-scale features.
-
-
+- We redesign Dual Transformer Bridge based on the Enhanced Transformer Context Bridge ([MISSFormer]([GitHub - ZhifangDeng/MISSFormer](https://github.com/ZhifangDeng/MISSFormer))) to further model inter-stage correlations of hierarchical multi-scale features.
 
 ## Updates
-
-
 
 ## Requirements
 
@@ -40,9 +32,9 @@ pip install -r requirements.txt
 
 ## Dataset preparation
 
-- Synapse Dataset: please go to "./datasets/README.md" for the details about preparing preprocessed Synapse dataset. Or download the Synapse Dataset from [here](https://drive.google.com/uc?export=download&id=18I9JHH_i0uuEDg-N6d7bfMdf7Ut6bhBi) (??)
+- Synapse Dataset: please go to "./datasets/README.md" for the details about preparing preprocessed Synapse dataset or download the Synapse Dataset from [here](https://drive.google.com/uc?export=download&id=18I9JHH_i0uuEDg-N6d7bfMdf7Ut6bhBi).
 
-- ISIC 2018: please download the ISIC 2018 train dataset from [here](??) (??)
+- ISIC 2018: please download the ISIC 2018 train dataset from [ISIC Challenge](https://challenge.isic-archive.com/data/).
 
 ## Train
 
@@ -57,7 +49,6 @@ Run the following code to train TransCeption on the Synapse Dataset:
 Run the following code to test the trained TransCeption on the Synapse Dataset:
 
 ```python
-  
 python test.py --dataset Synapse --base_lr 0.05 --model_name TransCeption --output_dir <your output path> --br_config 2 --weight_pth <your path to .pth file>
 ```
 
@@ -88,7 +79,13 @@ python test.py --dataset Synapse --base_lr 0.05 --model_name TransCeption --outp
 
  ![](assets/2022-12-22-17-39-05-12-17_synapsevisualization_0_99_100.png)
 
-## ISIC...
+Qualitative result of different models on Synapse dataset. From (a) to (f) are Ground Truth, U-Net, TransUNet, Swin U-Net, MISSFormer, and our TransCeption.
+
+## Visualization on ISIC 2018
+
+![](assets/2022-12-24-15-30-24-isicvisualization_case_1_crop.png)
+
+Visual comparisons of EffFormer baseline and our TransCeption model on the ISIC 2018 Skin Lesion Dataset. Ground truth boundaries are shown in green, and predicted boundaries are shown in blue. 
 
 ## Reference
 
