@@ -8,7 +8,7 @@ TransCeption is a U-shaped hierarchical architecture which aggregates the incept
 
 - Intra-stage Feature Fusion Module (IFF) is introduced to emphasize the interactions across the channel dimension of concatenated feature maps with the crucial positional information properly retained.
 
-- We redesign Dual Transformer Bridge based on the Enhanced Transformer Context Bridge ([MISSFormer]([GitHub - ZhifangDeng/MISSFormer](https://github.com/ZhifangDeng/MISSFormer))) to further model inter-stage correlations of hierarchical multi-scale features.
+- We redesign Dual Transformer Bridge based on the Enhanced Transformer Context Bridge from [MISSFormer]([GitHub - ZhifangDeng/MISSFormer](https://github.com/ZhifangDeng/MISSFormer) to further model inter-stage correlations of hierarchical multi-scale features.
 
 ## Updates
 
