@@ -1,5 +1,7 @@
 # TransCeption: Hierarchical and Inception-like Transformer Design for Medical Image Segmentation
 
+The official code for ["_Enhancing Medical Image Segmentation with TransCeption: A Multi-Scale Feature Fusion Approach_"]().
+
 TransCeption is a U-shaped hierarchical architecture which aggregates the inception-like structure in the encoder based on the pure transformer network.
 
  In this approach,  
@@ -11,6 +13,19 @@ TransCeption is a U-shaped hierarchical architecture which aggregates the incept
 - We redesign Dual Transformer Bridge based on the Enhanced Transformer Context Bridge ([MISSFormer](https://github.com/ZhifangDeng/MISSFormer)) to further model inter-stage correlations of hierarchical multi-scale features.
 
 ## Updates
+- 27 Jan., 2023: Initial release with arXiv.
+- 25 Jan., 2023: Submitted to IEEE TMI [Under Review].
+
+
+## Citation
+```
+@article{azad2023transception,
+  title={Enhancing Medical Image Segmentation with TransCeption: A Multi-Scale Feature Fusion Approach},
+  author={Azad, Reza and Jia, Yiwei and Aghdam, Ehsan Khodapanah and Cohen-Adad, Julien and Merhof, Dorit},
+  journal={arXiv preprint arXiv:},
+  year={2023}
+}
+```
 
 ## Requirements
 
