@@ -77,13 +77,13 @@ python test.py --dataset Synapse --base_lr 0.05 --model_name TransCeption --outp
 
 ### Visualization on Synapse
 
- ![](assets/2022-12-22-17-39-05-12-17_synapsevisualization_0_99_100.png)
+ ![](assets/bb3e1f75bca5a572ac1a38513593a47351259af0.png)
 
 Qualitative result of different models on Synapse dataset. From (a) to (f) are Ground Truth, U-Net, TransUNet, Swin U-Net, MISSFormer, and our TransCeption.
 
 ## Visualization on ISIC 2018
 
-![](assets/2022-12-24-15-30-24-isicvisualization_case_1_crop.png)
+![](assets/1bbc7be021854383d11a8480467ce17d62c4f26c.png)
 
 Visual comparisons of EffFormer baseline and our TransCeption model on the ISIC 2018 Skin Lesion Dataset. Ground truth boundaries are shown in green, and predicted boundaries are shown in blue. 
 
