@@ -79,7 +79,7 @@ python test.py --dataset Synapse --base_lr 0.05 --model_name TransCeption --outp
 
  ![](assets/bb3e1f75bca5a572ac1a38513593a47351259af0.png)
 
-Qualitative result of different models on Synapse dataset. From (a) to (f) are Ground Truth, U-Net, TransUNet, Swin U-Net, MISSFormer, and our TransCeption.
+Qualitative result of different models on Synapse dataset. From (a) to (f) are Ground Truth, U-Net, TransUNet, Swin-Unet, MISSFormer, and our TransCeption.
 
 ## Visualization on ISIC 2018
 
