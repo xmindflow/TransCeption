@@ -1,4 +1,4 @@
-# TransCeption: Hierarchical and Inception-like Transformer Design for Medical Image Segmentation
+# Enhancing Medical Image Segmentation with TransCeption: A Multi-Scale Feature Fusion Approach
 
 The official code for ["_Enhancing Medical Image Segmentation with TransCeption: A Multi-Scale Feature Fusion Approach_"]().
 
