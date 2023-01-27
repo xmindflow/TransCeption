@@ -22,7 +22,7 @@ TransCeption is a U-shaped hierarchical architecture which aggregates the incept
 @article{azad2023transception,
   title={Enhancing Medical Image Segmentation with TransCeption: A Multi-Scale Feature Fusion Approach},
   author={Azad, Reza and Jia, Yiwei and Aghdam, Ehsan Khodapanah and Cohen-Adad, Julien and Merhof, Dorit},
-  journal={arXiv preprint arXiv:},
+  journal={arXiv preprint arXiv:2301.10847},
   year={2023}
 }
 ```
