@@ -1,6 +1,6 @@
 # Enhancing Medical Image Segmentation with TransCeption: A Multi-Scale Feature Fusion Approach
 
-The official code for ["_Enhancing Medical Image Segmentation with TransCeption: A Multi-Scale Feature Fusion Approach_"]().
+The official code for ["_Enhancing Medical Image Segmentation with TransCeption: A Multi-Scale Feature Fusion Approach_"](https://arxiv.org/abs/2301.10847).
 
 TransCeption is a U-shaped hierarchical architecture which aggregates the inception-like structure in the encoder based on the pure transformer network.
 
