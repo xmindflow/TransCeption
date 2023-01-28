@@ -13,11 +13,12 @@ TransCeption is a U-shaped hierarchical architecture which aggregates the incept
 - We redesign Dual Transformer Bridge based on the Enhanced Transformer Context Bridge ([MISSFormer](https://github.com/ZhifangDeng/MISSFormer)) to further model inter-stage correlations of hierarchical multi-scale features.
 
 ## Updates
+
 - 27 Jan., 2023: Initial release with arXiv.
 - 25 Jan., 2023: Submitted to IEEE TMI [Under Review].
 
-
 ## Citation
+
 ```
 @article{azad2023transception,
   title={Enhancing Medical Image Segmentation with TransCeption: A Multi-Scale Feature Fusion Approach},
@@ -66,6 +67,10 @@ Run the following code to test the trained TransCeption on the Synapse Dataset:
 ```python
 python test.py --dataset Synapse --base_lr 0.05 --model_name TransCeption --output_dir <your output path> --br_config 2 --weight_pth <your path to .pth file>
 ```
+
+We uploaded the trained weight for Synapse dataset [here](https://drive.google.com/file/d/1TGXpG9bppo8Wifi14boIgCeDjVhCyjxC/view?usp=share_link.)
+
+
 
 ## Quick Overview
 
