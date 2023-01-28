@@ -177,6 +177,11 @@ if __name__ == "__main__":
     # net = MSTransception(num_classes=args.num_classes, head_count=args.head_count, dil_conv = args.dil_conv, token_mlp_mode="mix_skip", MSViT_config=args.MSViT_config, concat=args.concat, have_bridge=args.have_bridge, use_sa_config=args.use_sa_config,sa_ker=args.sa_ker,Stage_3or4=args.Stage_3or4, inter = args.inter).cuda()
     net = MSTransception(num_classes=args.num_classes, head_count=args.head_count, token_mlp_mode="mix_skip", MSViT_config=args.MSViT_config, concat=args.concat, have_bridge=args.have_bridge, Stage_3or4=args.Stage_3or4, br_ch_att_list=br_ch_att_list).cuda()
 
+    #snapshot = os.path.join(args.output_dir, 'best_model.pth')
+    # snapshot = f'/home/students/yiwei/yiwei_gitlab/EffFormer/outputs/transfilm_epoch_399.pth'
+    #snapshot = f'/work/scratch/yiwei/last_week/MSTr_coord_silu_tfff/MSTr_coord_silu_tfff_8223_epoch_399.pth'
+    # snapshot = f'/work/scratch/yiwei/last_week/accu_worse_in_sequence/MSTr_coord_ftft_accu/MSTr_coord_ftft_epoch_339_7705.pth'
+    #snapshot = f'/work/scratch/yiwei/last_week/MSTr_coord_silu_wobr/MSTr_coord_silu_wobr_epoch_259_7643.pth'
     snapshot = args.weight_pth
     if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model', 'epoch_'+str(args.max_epochs-1)+"_wo_bridge")
     msg = net.load_state_dict(torch.load(snapshot))
@@ -202,3 +207,5 @@ if __name__ == "__main__":
 
     inference(args, net, test_save_path)
 
+
+#  python test.py --dataset Synapse --base_lr 0.05 --model_name MSTr_8224_test --output_dir /work/scratch/yiwei/last_week/MSTr_github/ --weight_pth /work/scratch/yiwei/last_week/MSTr_coord_silu_tfff/MSTr_coord_silu_tfff_8223_epoch_399.pth

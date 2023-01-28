@@ -27,7 +27,7 @@ parser.add_argument('--list_dir', type=str,
 parser.add_argument('--num_classes', type=int,
                     default=9, help='output channel of network')
 parser.add_argument('--output_dir', type=str, 
-                    default='./output',help='output dir')                   
+                    default='./output_v5',help='output dir')                   
 parser.add_argument('--max_iterations', type=int,
                     default=90000, help='maximum epoch number to train')
 parser.add_argument('--max_epochs', type=int,
@@ -39,7 +39,7 @@ parser.add_argument('--num_workers', type=int,
 parser.add_argument('--eval_interval', type=int,
                     default=20, help='eval_interval')
 parser.add_argument('--model_name', type=str,
-                    default='Transception', help='model_name')
+                    default='transCeption', help='model_name')
 parser.add_argument('--n_gpu', type=int, default=1, help='total gpu')
 parser.add_argument('--deterministic', type=int,  default=1,
                     help='whether use deterministic training')
@@ -79,7 +79,7 @@ parser.add_argument('--inception_comb', type=str,  default="135", help='Set the 
 
 parser.add_argument('--head_count', type=int,  default=8, help='number of head in attention module')
 parser.add_argument('--MSViT_config', type=int,  default=2, help='Set which config to use')
-parser.add_argument('--concat', type=str,  default="coord", help='normal--2d concat; 3d--3d concat; coord--coord attention i.e. iff')
+parser.add_argument('--concat', type=str,  default="coord", help='normal--2d concat; 3d--3d concat')
 parser.add_argument('--have_bridge', type=str,
                     default='original', help='None: no bridge; new:new bridge; original: original bridge para:para bridge')
 
@@ -163,8 +163,8 @@ if __name__ == "__main__":
 #    net = MSTransception(num_classes=args.num_classes, head_count=args.head_count, dil_conv = args.dil_conv, token_mlp_mode="mix_skip", MSViT_config=args.MSViT_config, concat=args.concat, have_bridge=args.have_bridge).cuda()
     # MSTransception_playCat.py
  
-    net = MSTransception(num_classes=args.num_classes, head_count=args.head_count, token_mlp_mode="mix_skip", MSViT_config=args.MSViT_config, concat=args.concat, have_bridge=args.have_bridge, Stage_3or4=args.Stage_3or4, br_ch_att_list=br_ch_att_list).cuda()
+    # net = MSTransception(num_classes=args.num_classes, head_count=args.head_count, token_mlp_mode="mix_skip", MSViT_config=args.MSViT_config, concat=args.concat, have_bridge=args.have_bridge, Stage_3or4=args.Stage_3or4, br_ch_att_list=br_ch_att_list).cuda()
 
-
+    net = MSTransception(num_classes=args.num_classes)
     trainer = {'Synapse': trainer_synapse,}
     trainer[dataset_name](args, net, args.output_dir)

@@ -2757,8 +2757,8 @@ class BridgeBlock_sp(nn.Module):
         return outs
 
 class MSTransception(nn.Module):
-    def __init__(self, num_classes=9, head_count=1, dil_conv=1, token_mlp_mode="mix_skip", MSViT_config=1, concat='normal', have_bridge='new', use_sa_config = 1,
-        sa_ker = 7, Stage_3or4=3, inter='res', num_sp = 1, br_ch_att_list = [False, False, False, True]):#, inception="135"
+    def __init__(self, num_classes=9, head_count=8, dil_conv=1, token_mlp_mode="mix_skip", MSViT_config=2, concat='coord', have_bridge='original', use_sa_config = 1,
+        sa_ker = 7, Stage_3or4=3, inter='res', num_sp = 1, br_ch_att_list = [True, False, False, False]):#, inception="135"
         super().__init__()
     
         # Encoder
@@ -2852,29 +2852,10 @@ class MSTransception(nn.Module):
         return tmp_0
     
 
+if __name__ == "__main__":
+    # #call Transception_res
 
-# if __name__ == "__main__":
-#     # #call Transception_res
-#     # # normal 3d cam cam_fact se
-#     # # model = MSTransception(num_classes=9, head_count=8, dil_conv = 1, token_mlp_mode="mix_skip",MSViT_config=2, concat='coord', have_bridge = True, Stage_3or4=3)
-#     # # model = MSTransception(num_classes=9, head_count=8, dil_conv = 1, token_mlp_mode="mix_skip",MSViT_config=2, concat='cbam', have_bridge = True, use_sa_config=1, sa_ker=7, Stage_3or4=3)
-#     # # model = MSTransception(num_classes=9, head_count=8, dil_conv = 1, token_mlp_mode="mix_skip",MSViT_config=2, concat='normal', have_bridge = True, Stage_3or4=4)
-#     # # model = MSTransception(num_classes=9, head_count=8, dil_conv = 1, token_mlp_mode="mix_skip",MSViT_config=2, concat='skn', have_bridge = True, Stage_3or4=4)
-#     # model = MSTransception(num_classes=9, head_count=8, dil_conv = 1, token_mlp_mode="mix_skip",MSViT_config=2, concat='coord', have_bridge = 'None', Stage_3or4=3, br_ch_att_list = [False, True, False, False])
-    
-#     # tmp_0 = model(torch.rand(1, 3, 224, 224))
-    
-#     # # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-#     # # model = model.to(device)
-#     # # summary(model, (1, 3,224,224) )
-#     # # # stat(model.to('cpu'), (3, 224, 224))
-#     # print(tmp_0.shape)
-
-#     h_swish_func = h_swish()
-#     silu_swish_func = silu_swish()
-#     input = torch.tensor([-3.2,-3.0,-2.0,-1.5,1.0,1.5, 2.0, 3.0]).cuda()
-#     output_h = h_swish_func(input)
-#     output_silu = silu_swish_func(input)
-
-#     print(f'output h   _swish: {output_h}')
-#     print(f'output silu_swish: {output_silu}')
+    model = MSTransception(num_classes=9).cuda()
+    tmp_0 = model(torch.rand(1, 3, 224, 224).cuda())
+    print(tmp_0.shape)    
+    summary(model, (1, 3,224,224))
