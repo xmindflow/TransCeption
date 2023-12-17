@@ -44,6 +44,7 @@ To set up the correct environment, we recommend running the following code to in
 
 ```python
 pip install -r requirements.txt
+cd TransCeption
 ```
 
 ## Dataset preparation
@@ -57,7 +58,7 @@ pip install -r requirements.txt
 Run the following code to train TransCeption on the Synapse Dataset:
 
 ```python
---dataset Synapse --base_lr 0.05 --max_epochs 500 --eval_interval 20 --model_name TransCeption --batch_size 16 --root_path <your path to ./Synapse/train_npz> --output_dir <your output path>
+python train_MSTransception.py --dataset Synapse --base_lr 0.05 --max_epochs 500 --eval_interval 20 --model_name TransCeption --batch_size 16 --root_path <your path to ./Synapse/train_npz> --output_dir <your output path>
 ```
 
 ## Test
@@ -69,8 +70,6 @@ python test.py --dataset Synapse --base_lr 0.05 --model_name TransCeption --outp
 ```
 
 We uploaded the trained weight for Synapse dataset [here](https://drive.google.com/file/d/1TGXpG9bppo8Wifi14boIgCeDjVhCyjxC/view?usp=share_link.)
-
-
 
 ## Quick Overview
 
